@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import TemperatureSensor, TemperatureRecord
 from .forms import SensorForm
@@ -21,11 +21,16 @@ def current_temps(request):
 def sensors(request):
     if request.method == 'POST':
         for key in request.POST:
-            TemperatureSensor.objects.get(id=request.POST[key])
-        return HttpResponse(request.POST['1'])
+            if "sensor" in key:
+                TemperatureSensor.objects.get(id=request.POST[key]).delete()
+        return HttpResponseRedirect("/temperature/sensors/")
     context = {"sensors": []}
     for nextSensor in TemperatureSensor.objects.all():
-        context["sensors"].append({"id": nextSensor.id, "location": nextSensor.location, "type": nextSensor.sensorType, "url": nextSensor.url})
+        context["sensors"].append({"id": nextSensor.id, 
+                                   "location": nextSensor.location, 
+                                   "type": nextSensor.sensorType, 
+                                   "url": nextSensor.url,
+                                   "name": "sensor-" + str(nextSensor.id)})
 
     return render(request, 'temperature/sensors.html', context=context)
 

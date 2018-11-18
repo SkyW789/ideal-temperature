@@ -13,7 +13,7 @@
             </tr>
             {% for nextSensor in sensors %}
             <tr>
-                <td><input type="checkbox" value={{ nextSensor.id }} name={{ nextSensor.id }}>
+                <td><input type="checkbox" value={{ nextSensor.id }} name={{ nextSensor.name }}>
                 <td>{{ nextSensor.location }}</td>
                 <td>{{ nextSensor.type }}</td>
                 <td>{{ nextSensor.url }}</td>
