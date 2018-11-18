@@ -1,0 +1,6 @@
+virt_env
+db.sqlite3
+*.pyc
+__pycache__
+settings-production.py
+migrations/

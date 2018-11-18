@@ -1,0 +1,9 @@
+{% extends "temperature/base.html" %}
+{% block content %}
+<h1>Add Sensor</h1>
+<form action='/temperature/add_sensor/' method='post'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" name="newSensor" content="Submit"><br>
+</form>
+{% endblock %}

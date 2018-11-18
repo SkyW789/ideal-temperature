@@ -1,0 +1,9 @@
+{% extends "temperature/base.html" %}
+{% block content %}
+<body>
+    <h1>Current Temperatures</h1>
+    {% for nextValue in sensor_temps %}
+        {{ nextValue.sensor }} = {{ nextValue.temp }}F<br>
+    {% endfor %}
+</body>
+{% endblock %}
