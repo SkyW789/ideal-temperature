@@ -43,7 +43,7 @@ def add_sensor(request):
             sensorURL = form.cleaned_data['sensorURL']
             newSensor = TemperatureSensor(location=sensorLocation, sensorType=sensorType, url=sensorURL)
             newSensor.save()
-            return HttpResponse("Sensor Type is " + sensorType)
+            return HttpResponseRedirect("/temperature/sensors/")
     else:
         form = SensorForm()
 
