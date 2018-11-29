@@ -3,8 +3,7 @@
 from TempSensor import DatabaseNotFoundError, WriteTempError
 import TempSensor
 import sys
-
-DB_FILE = "../website/db-test.sqlite3"
+from DataCollectionSettings import DB_FILE
 
 try:
     tempConn = TempSensor.TempDatabase(DB_FILE)

@@ -6,6 +6,11 @@ import sqlite3
 from django.utils import timezone
 import os
 
+HTTP_SUCCESS = 200
+
+class TempGetError(ConnectionError):
+    pass
+
 class TempSensor():
 
     def __init__(self, unit='F', address=None, 
@@ -44,20 +49,26 @@ class TempSensor():
             return True
         
     def get_current_temp(self):
-        maxTries = 3
-        count = 0
-        newTemp = 0
-        while count < maxTries:
+        newTemp = None
+        try:
+            r = requests.get(self.address)
+        except requests.exceptions.MissingSchema:
+            raise TempGetError("Missing schema from sensor at " + self.location)
+        except requests.exceptions.ConnectionError:
+            raise TempGetError("Error connecting to sensor at " + self.location)
+        except requests.exceptions.InvalidURL:
+            raise TempGetError("Invalid URL from sensor at " + self.location)
+        if r.status_code == HTTP_SUCCESS:
             try:
-                r = requests.get(self.address)
                 newTemp = float(r.text)
-                if r.status_code == 200:
-                    break
-                else:
-                    count += 1
-            except (ValueError, ConnectionError) as e:
-                count += 1
-        return TempDataPoint(temp=newTemp, unit=self.unit, sensor=self)
+            except ValueError:
+                raise TempGetError("Invalid value return from " + self.location)
+        else:
+            count += 1
+        if newTemp is None:
+            raise TempGetError("Failed to get the temperature")
+        else:
+            return TempDataPoint(temp=newTemp, unit=self.unit, sensor=self)
 
 class TempDataPoint():
 
@@ -81,6 +92,9 @@ class DatabaseNotFoundError(Exception):
     pass
 
 class WriteTempError(Exception):
+    pass
+
+class TempGetError(ConnectionError):
     pass
 
 class TempDatabase():

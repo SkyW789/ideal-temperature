@@ -4,12 +4,10 @@
 # the database
 
 import requests
-from TempSensor import TempDatabase, TempDataPoint
-from TempSensor import TempSensor
-from TempSensor import DatabaseNotFoundError, WriteTempError
 import sys
-
-DB_FILE = "../website/db.sqlite3"
+from TempSensor import TempDatabase, TempDataPoint, TempSensor
+from TempSensor import DatabaseNotFoundError, WriteTempError, TempGetError
+from DataCollectionSettings import DB_FILE
 
 try:
     tempConn = TempDatabase(DB_FILE)
@@ -20,7 +18,11 @@ except DatabaseNotFoundError:
 sensors = tempConn.get_all_sensors()
 
 for nextSensor in sensors:
-    newTemp = nextSensor.get_current_temp()
+    try:
+        newTemp = nextSensor.get_current_temp()
+    except TempGetError as e:
+        print(e)
+        continue
     print("Current temperature at " + nextSensor.location + " is " + str(newTemp.temp))
     try:
         tempConn.write_temp(newTemp)
