@@ -1,6 +1,11 @@
 .menu {
     color: black;
     padding: 0 .5em .2em .5em;
+    text-decoration: none;
+}
+
+.menu:visited {
+    color: black;
 }
 
 .header {
