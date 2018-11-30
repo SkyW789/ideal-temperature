@@ -1,13 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-<title>Temperature App</title>
-<a href="/temperature/current_temps">Current Temperatures</a>|
-<a href="/temperature/add_sensor">Add Sensor</a>|
-<a href="/temperature/sensors">Sensors</a>
+    <title>Temperature App</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'temperature/baseStyle.css' %}">
 </head>
 <body>
-    {% block content %}
-    {% endblock %}
+    <div class="header">
+        <h1>Ideal Temperature App</h1>
+        <a class="menu" href="/temperature/current_temps">Current Temperature</a>
+        <a class="menu" href="/temperature/add_sensor">Add Sensor</a>
+        <a class="menu" href="/temperature/sensors">Sensors</a>
+    </div>
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
 </html>

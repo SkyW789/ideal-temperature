@@ -1,0 +1,25 @@
+.menu {
+    color: black;
+    padding: 0 .5em .2em .5em;
+}
+
+.header {
+    background-color: #B0394B;
+    color: white;
+    padding: 1em 0 1em 1em;
+    font-family: "Verdana", sans-serif; 
+}
+
+.content {
+    padding: .5em 0 0 2em;
+}
+
+body {
+    margin:0px;
+    padding: 0px;
+}
+
+h1 {
+    margin: 0;
+    padding: 0 0 .3em 0;
+}
