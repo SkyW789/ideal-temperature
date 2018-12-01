@@ -15,8 +15,7 @@ def current_temps(request):
             context["sensor_temps"].append({"sensor": nextSensor.location, "temp": allTemps[0].temperature})
         else:
             context["sensor_temps"].append({"sensor": nextSensor.location, "temp": "No recorded temperatures"})
-    template = loader.get_template("temperature/current_temps.html")
-    return HttpResponse(template.render(context))
+    return render(request, 'temperature/current_temps.html', context=context)
 
 def sensors(request):
     if request.method == 'POST':

@@ -1,16 +1,16 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Temperature App</title>
+    {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'temperature/baseStyle.css' %}">
 </head>
 <body>
     <div class="header">
         <h1>Ideal Temperature App</h1>
-        <a class="menu" href="/temperature/current_temps">Current Temperature</a>
-        <a class="menu" href="/temperature/add_sensor">Add Sensor</a>
-        <a class="menu" href="/temperature/sensors">Sensors</a>
+        <a class="menu{% if request.path == "/temperature/current_temps/"%} active{% endif %}" href="/temperature/current_temps">Current Temperature</a>
+        <a class="menu{% if request.path == "/temperature/add_sensor/"%} active{% endif %}" href="/temperature/add_sensor">Add Sensor</a>
+        <a class="menu{% if request.path == "/temperature/sensors/"%} active{% endif %}" href="/temperature/sensors">Sensors</a>
     </div>
     <div class="content">
         {% block content %}

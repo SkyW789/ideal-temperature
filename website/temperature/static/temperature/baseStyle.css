@@ -8,6 +8,10 @@
     color: black;
 }
 
+.active {
+    background-color: #B65A5A;
+}
+
 .header {
     background-color: #B0394B;
     color: white;
