@@ -11,6 +11,9 @@
         <a class="menu{% if request.path == "/temperature/current_temps/"%} active{% endif %}" href="/temperature/current_temps">Current Temperature</a>
         <a class="menu{% if request.path == "/temperature/add_sensor/"%} active{% endif %}" href="/temperature/add_sensor">Add Sensor</a>
         <a class="menu{% if request.path == "/temperature/sensors/"%} active{% endif %}" href="/temperature/sensors">Sensors</a>
+        {% if user.is_authenticated %}
+            <a class="menu" href="/temperature/accounts/logout">Log Out</a>
+        {% endif %}
     </div>
     <div class="content">
         {% block content %}

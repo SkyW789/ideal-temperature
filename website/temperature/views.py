@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
+from django.contrib.auth.decorators import login_required
 from .models import TemperatureSensor, TemperatureRecord
 from .forms import SensorForm
 
@@ -17,6 +18,7 @@ def current_temps(request):
             context["sensor_temps"].append({"sensor": nextSensor.location, "temp": "No recorded temperatures"})
     return render(request, 'temperature/current_temps.html', context=context)
 
+@login_required
 def sensors(request):
     if request.method == 'POST':
         for key in request.POST:
@@ -33,6 +35,7 @@ def sensors(request):
 
     return render(request, 'temperature/sensors.html', context=context)
 
+@login_required
 def add_sensor(request):
     if request.method == 'POST':
         form = SensorForm(request.POST)
@@ -48,5 +51,3 @@ def add_sensor(request):
 
     return render(request, 'temperature/add_sensor_form.html', {'form': form})
 
-
-# TemperatureRecord.objects.filter(timeRecorded__gte=timezone.now() - timedelta(hours=20))
