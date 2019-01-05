@@ -1,9 +1,19 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from django.template import loader
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework import generics, permissions
+from .serializers import TemperatureRecordSerializer
 from .models import TemperatureSensor, TemperatureRecord
 from .forms import SensorForm
+from .permissions import IsOwnerOrReadOnly
 
 def index(request):
     return HttpResponse("This is the temperature app.")
@@ -30,24 +40,38 @@ def sensors(request):
         context["sensors"].append({"id": nextSensor.id, 
                                    "location": nextSensor.location, 
                                    "type": nextSensor.sensorType, 
-                                   "url": nextSensor.url,
-                                   "name": "sensor-" + str(nextSensor.id)})
+                                   "owner": nextSensor.owner.username,
+                                   "name": nextSensor.name})
 
     return render(request, 'temperature/sensors.html', context=context)
 
 @login_required
 def add_sensor(request):
     if request.method == 'POST':
-        form = SensorForm(request.POST)
-        if form.is_valid():
-            sensorType = form.cleaned_data['sensorType']
-            sensorLocation = form.cleaned_data['sensorLocation']
-            sensorURL = form.cleaned_data['sensorURL']
-            newSensor = TemperatureSensor(location=sensorLocation, sensorType=sensorType, url=sensorURL)
-            newSensor.save()
+        sensor_form = SensorForm(request.POST)
+        if sensor_form.is_valid():
+            sensor_form.save()
             return HttpResponseRedirect("/temperature/sensors/")
     else:
-        form = SensorForm()
+        sensor_form = SensorForm()
 
-    return render(request, 'temperature/add_sensor_form.html', {'form': form})
+    return render(request, 'temperature/add_sensor_form.html', {'sensor_form': sensor_form})
+
+
+## API views ##
+
+class TemperatureRecordList(generics.ListCreateAPIView):
+    queryset = TemperatureRecord.objects.all()
+    serializer_class = TemperatureRecordSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    #def perform_create(self, serializer):
+    #    print(serializer)
+    #    sensor = TemperatureSensor.objects.get(name=serializer.data['sensorName'])
+    #    serializer.save(sensor=sensor)
+
+class TemperatureRecordDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TemperatureRecord.objects.all()
+    serializer_class = TemperatureRecordSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 

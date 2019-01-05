@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import TemperatureSensor, TemperatureRecord
 
-# Register your models here.
+admin.site.register(TemperatureSensor)
+admin.site.register(TemperatureRecord)

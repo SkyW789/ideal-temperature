@@ -1,6 +1,9 @@
 from django import forms
+from django.contrib.auth.models import User
+from .models import TemperatureSensor
 
-class SensorForm(forms.Form):
-    sensorType = forms.CharField(label='Sensor Type', max_length=25)
-    sensorLocation = forms.CharField(label='Sensor Location', max_length=25)
-    sensorURL = forms.CharField(label='Sensor URL', max_length=100)
+class SensorForm(forms.ModelForm):
+    class Meta:
+        model = TemperatureSensor
+        fields = ['name', 'location', 'sensorType', 'owner']
+

@@ -7,16 +7,18 @@
         <table border="1" style="width:100%">
             <tr>
                 <th>Select</th>
+		<th>Name</th>
                 <th>Location</th>
                 <th>Type</th>
-                <th>URL</th>
+                <th>Owner</th>
             </tr>
             {% for nextSensor in sensors %}
             <tr>
-                <td><input type="checkbox" value={{ nextSensor.id }} name={{ nextSensor.name }}>
+		<td><input type="checkbox" value={{ nextSensor.id }} name='sensor'{{ nextSensor.name }}></td>
+		<td>{{ nextSensor.name }}</td>
                 <td>{{ nextSensor.location }}</td>
                 <td>{{ nextSensor.type }}</td>
-                <td>{{ nextSensor.url }}</td>
+                <td>{{ nextSensor.owner }}</td>
             </tr>
             {% endfor %}
         </table><br>
