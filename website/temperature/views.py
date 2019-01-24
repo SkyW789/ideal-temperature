@@ -63,7 +63,7 @@ def add_sensor(request):
 class TemperatureRecordList(generics.ListCreateAPIView):
     queryset = TemperatureRecord.objects.all()
     serializer_class = TemperatureRecordSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
 
     #def perform_create(self, serializer):
     #    print(serializer)
