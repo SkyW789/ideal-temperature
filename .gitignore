@@ -7,3 +7,4 @@ migrations/
 settings.py
 docker-compose.yml
 dev_env
+ClientData.py
