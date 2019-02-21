@@ -5,7 +5,6 @@ services:
         build: .
         command: gunicorn web.wsgi:application -w 4 --bind 0.0.0.0:8000
         volumes:
-            #- ./:/usr/src/app/
             - static_volume:/usr/src/app/staticfiles
         expose:
             - 8000
@@ -34,7 +33,7 @@ services:
     nginx:
         build: ./nginx
         ports:
-            - 1337:80
+            - 80:80
         depends_on:
             - web
         volumes:
