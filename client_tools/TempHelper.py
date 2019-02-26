@@ -26,8 +26,8 @@ class TempDataPoint():
                              self.time.hour, 
                              self.time.minute, 
                              self.time.second, 
-                             tzinfo-self.time.tzinfo)
-        return self.time.isoformat(timespec='seconds')
+                             tzinfo=self.time.tzinfo)
+        return self.time.isoformat()
 
     def get_dict(self):
         return {"temperature": self.temp, 'timeRecorded': self.convert_datetime_to_string(), 'sensorName': self.sensor}
