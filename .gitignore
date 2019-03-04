@@ -6,3 +6,4 @@ migrations/
 docker-compose.yml
 dev_env
 ClientData.py
+api-tester.py

@@ -11,7 +11,7 @@ class TemperatureSensor(models.Model):
         return self.name
 
 class TemperatureRecord(models.Model):
-    temperature = models.IntegerField(default=0)
+    temperature = models.DecimalField(max_digits=4, decimal_places=1, default=0)
     timeRecorded = models.DateTimeField('date and time recorded')
     sensor = models.ForeignKey(TemperatureSensor, on_delete=models.CASCADE, default=1)
 

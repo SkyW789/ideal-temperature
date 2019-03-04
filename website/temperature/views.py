@@ -23,9 +23,9 @@ def current_temps(request):
     for nextSensor in TemperatureSensor.objects.all():
         allTemps = TemperatureRecord.objects.filter(sensor__exact=nextSensor).order_by('-timeRecorded')
         if len(allTemps) > 0:
-            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": allTemps[0].temperature})
+            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": allTemps[0].temperature, "datetime": allTemps[0].timeRecorded})
         else:
-            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": "No recorded temperatures"})
+            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": "No recorded temperatures", "datetime": "None"})
     return render(request, 'temperature/current_temps.html', context=context)
 
 @login_required
