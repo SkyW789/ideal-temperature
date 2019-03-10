@@ -1,0 +1,1 @@
+0   0	*   *	*   python /usr/src/app/manage.py cleanTemperatureRecords 7 60

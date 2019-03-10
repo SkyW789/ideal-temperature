@@ -4,6 +4,7 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -20,6 +21,7 @@ def index(request):
 
 def current_temps(request):
     context = {"sensor_temps": []}
+    timezone.activate('America/Denver')
     for nextSensor in TemperatureSensor.objects.all():
         allTemps = TemperatureRecord.objects.filter(sensor__exact=nextSensor).order_by('-timeRecorded')
         if len(allTemps) > 0:

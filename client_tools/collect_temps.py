@@ -17,7 +17,7 @@ print("Begin")
 try:
     with open(sensorPath, 'r') as f:
         tempRaw = f.read()
-    tempF = round(float(tempRaw.split('\n')[1].split(' ')[-1].split('=')[1]) / 1000 * 9 / 5 + 32)
+    tempF = round(float(tempRaw.split('\n')[1].split(' ')[-1].split('=')[1]) / 1000 * 9 / 5 + 32, 1)
 except FileNotFoundError:
     print("Error: Unable to get temperature")
     sys.exit()

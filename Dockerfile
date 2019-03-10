@@ -10,6 +10,7 @@ WORKDIR /usr/src/app
 COPY ./website/ /usr/src/app/
 COPY ./requirements.txt /usr/src/app/
 COPY ./entrypoint.sh /usr/src/app/
+COPY ./cronjobs.txt /usr/src/app/
 
 # Install dependencies
 RUN pip install --upgrade pip
@@ -19,6 +20,9 @@ RUN apk update \
     && pip install psycopg2 \
     && apk del build-deps
 RUN pip install -r requirements.txt
+
+# Add cron job
+RUN cat cronjobs.txt >> /etc/crontabs/root
 
 # Run entrypoint script
 RUN chmod 0755 /usr/src/app/entrypoint.sh
