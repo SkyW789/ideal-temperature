@@ -1,9 +1,10 @@
 import requests
 from datetime import datetime
+import pytz
 
 class TempDataPoint():
 
-    def __init__(self, temp, sensor, unit='F', time=datetime.utcnow()):
+    def __init__(self, temp, sensor, unit='F', time=datetime.now(tz=pytz.utc)):
         self.temp = temp
         self.unit = unit
         self.time = time

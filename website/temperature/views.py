@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import generics, permissions
+from datetime import datetime
+import pytz
 from .serializers import TemperatureRecordSerializer
 from .models import TemperatureSensor, TemperatureRecord
 from .forms import SensorForm
@@ -21,13 +23,19 @@ def index(request):
 
 def current_temps(request):
     context = {"sensor_temps": []}
-    timezone.activate('America/Denver')
+    mountain_tz = pytz.timezone('America/Denver')
     for nextSensor in TemperatureSensor.objects.all():
         allTemps = TemperatureRecord.objects.filter(sensor__exact=nextSensor).order_by('-timeRecorded')
         if len(allTemps) > 0:
-            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": allTemps[0].temperature, "datetime": allTemps[0].timeRecorded})
+            datetime_str = allTemps[0].timeRecorded.astimezone(
+                    tz=pytz.timezone('America/Denver')).strftime('%B %d, %Y, %I:%M %p %Z')
+            context["sensor_temps"].append({"sensor": nextSensor.location, 
+                                            "temp": allTemps[0].temperature, 
+                                            "datetime": datetime_str})
         else:
-            context["sensor_temps"].append({"sensor": nextSensor.location, "temp": "No recorded temperatures", "datetime": "None"})
+            context["sensor_temps"].append({"sensor": nextSensor.location, 
+                                            "temp": "No recorded temperatures", 
+                                            "datetime": "None"})
     return render(request, 'temperature/current_temps.html', context=context)
 
 @login_required
