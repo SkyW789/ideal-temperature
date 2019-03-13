@@ -20,16 +20,19 @@ class Command(BaseCommand):
 
         self.stdout.write("#### Starting the database cleaning - " + str(datetime.now()) + "#####")
         
-        temp_records = TemperatureRecord.objects.filter(
-                timeRecorded__lte=timezone.now()-timedelta(days=record_age_days)).order_by('-timeRecorded')
+        sensors = TemperatureSensor.objects.all()
         
-        last_time = timezone.now()
-        for next_record in temp_records:
-            if last_time - next_record.timeRecorded < timedelta(hours=1):
-                self.stdout.write("Deleting: " + str(next_record.timeRecorded))
-                next_record.delete()
-            else:
-                last_time = next_record.timeRecorded
+        for next_sensor in sensors:
+            temp_records = TemperatureRecord.objects.filter(sensor__id=next_sensor.id).filter(timeRecorded__lte=timezone.now()-timedelta(days=record_age_days)).order_by('-timeRecorded')
+            
+            self.stdout.write("Cleaning up " + next_sensor.name + ":")
+            last_time = timezone.now()
+            for next_record in temp_records:
+                if last_time - next_record.timeRecorded < timedelta(hours=1):
+                    self.stdout.write("Deleting: " + str(next_record.timeRecorded) + ": " + str(next_record.temperature))
+                    next_record.delete()
+                else:
+                    last_time = next_record.timeRecorded
 
         self.stdout.write("Finished the database cleaning")
 
