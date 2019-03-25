@@ -3,14 +3,14 @@
 # Collects temperature data on a raspberry pi and sends
 # it to the server.
 
-from TempHelper import TempDataPoint, TempComm
+from TempHelper import TempDataPoint, Comm
 import ClientData
 
-url = ClientData.url
-username = ClientData.username
-password = ClientData.password
-sensorPath = ClientData.sensorPath
-sensorName = ClientData.sensorName
+url = ClientDataTemp.url
+username = ClientDataTemp.username
+password = ClientDataTemp.password
+sensorPath = ClientDataTemp.sensorPath
+sensorName = ClientDataTemp.sensorName
 
 print("Begin")
 
@@ -25,8 +25,8 @@ except FileNotFoundError:
 print("tempF = " + str(tempF))
 dataPoint = TempDataPoint(tempF, sensorName)
 
-comm = TempComm(username, password, url)
-result = comm.sendTemp(dataPoint)
+comm = Comm(username, password, url)
+result = comm.send(dataPoint)
 if not result[0]:
     print("Error: " + result[1])
 

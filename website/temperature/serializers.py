@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TemperatureSensor, TemperatureRecord
+from .models import TemperatureSensor, TemperatureRecord, GarageRecord
 from django.contrib.auth.models import User
 
 class TemperatureRecordSerializer(serializers.ModelSerializer):
@@ -14,4 +14,9 @@ class TemperatureRecordSerializer(serializers.ModelSerializer):
         validated_data['sensor'] = TemperatureSensor.objects.get(name=validated_data['sensorName'])
         validated_data.pop('sensorName', None)
         return TemperatureRecord.objects.create(**validated_data)
+
+class GarageRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GarageRecord
+        fields = ('id', 'state', 'time')
 

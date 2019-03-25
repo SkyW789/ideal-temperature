@@ -1,0 +1,14 @@
+{% extends "temperature/base.html" %}
+{% block content %}
+<body>
+    <h1>Garage</h1>
+    <div class="card-group">
+        <div class="card">
+            <h2>Garage Door</h2>
+            <i class="fas fa-door-closed temp-icon"></i>
+            <p style="font-size: 25px">{{ state }}</p>
+            <p>{{ time }}</p>
+        </div>
+    </div>
+</body>
+{% endblock %}

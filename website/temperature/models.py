@@ -17,3 +17,14 @@ class TemperatureRecord(models.Model):
 
     def __str__(self):
         return str(self.timeRecorded) + " " + str(self.temperature)
+
+class GarageRecord(models.Model):
+    STATES = (
+        ("O", "Open"),
+        ("C", "Closed"),
+    )
+    state = models.CharField(max_length=1, choices=STATES)
+    time = models.DateTimeField('date and time recorded')
+
+    def __str__(self):
+        return str(self.time) + " " + str(self.state)

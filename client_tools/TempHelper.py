@@ -1,14 +1,39 @@
 import requests
 from datetime import datetime
 import pytz
+from abc import ABC, abstractmethod
 
-class TempDataPoint():
+class GenericDataPoint(ABC):
+    
+    @abstractmethod
+    def verify_data(self):
+        pass
 
-    def __init__(self, temp, sensor, unit='F', time=datetime.now(tz=pytz.utc)):
+    @abstractmethod
+    def get_dict(self):
+        pass
+
+    def convert_datetime_to_string(self, time):
+        # Round time to nearest second then convert to string
+        time_rounded_sec = datetime(time.year, 
+                             time.month, 
+                             time.day, 
+                             time.hour, 
+                             time.minute, 
+                             time.second, 
+                             tzinfo=time.tzinfo)
+        return time_rounded_sec.isoformat()
+
+class TempDataPoint(GenericDataPoint):
+
+    def __init__(self, temp, sensor, unit='F', time=None):
         self.temp = temp
         self.unit = unit
-        self.time = time
         self.sensor = sensor
+        if time:
+            self.time = time
+        else:
+            self.time = datetime.now(tz=pytz.utc)
 
     def verify_data(self):
         if not self.sensor:
@@ -19,19 +44,8 @@ class TempDataPoint():
             return False
         return True
 
-    def convert_datetime_to_string(self):
-        # Round time to nearest second then convert to string
-        self.time = datetime(self.time.year, 
-                             self.time.month, 
-                             self.time.day, 
-                             self.time.hour, 
-                             self.time.minute, 
-                             self.time.second, 
-                             tzinfo=self.time.tzinfo)
-        return self.time.isoformat()
-
     def get_dict(self):
-        return {"temperature": self.temp, 'timeRecorded': self.convert_datetime_to_string(), 'sensorName': self.sensor}
+        return {"temperature": self.temp, 'timeRecorded': self.convert_datetime_to_string(self.time), 'sensorName': self.sensor}
 
     def convert_to_c(self):
         if self.unit =="F":
@@ -43,22 +57,42 @@ class TempDataPoint():
             self.temp = self.temp * 9/5 + 32
             self.unit = "F"
 
-class TempComm():
+class DoorDataPoint(GenericDataPoint):
+
+    def __init__(self, state, time=None):
+        self.state = state
+        if time:
+            self.time = time
+        else:
+            self.time = datetime.now(tz=pytz.utc)
+
+    def verify_data(self):
+        if not self.state:
+            return False
+        if not self.time:
+            return False
+        return True
+
+    def get_dict(self):
+        return {"state": self.state, "time": self.convert_datetime_to_string(self.time)}
+
+class Comm():
 
     def __init__(self, username, password, url):
         self.username = username
         self.password = password
         self.url = url
 
-    def sendTemp(self, tempData):
-        if not tempData.verify_data:
+    def send(self, data):
+        if not data.verify_data:
             return (False, "Unable to verify the data")
         
         try:
             response = requests.post(self.url, 
-                                     data=tempData.get_dict(), 
+                                     data=data.get_dict(), 
                                      auth=requests.auth.HTTPBasicAuth(self.username, self.password), timeout=9.1)
         except requests.exceptions.RequestException as e:
             return (False, str(e))
 
         return (True, None)
+

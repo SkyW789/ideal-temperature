@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 from rest_framework import generics, permissions
 from datetime import datetime
 import pytz
-from .serializers import TemperatureRecordSerializer
-from .models import TemperatureSensor, TemperatureRecord
+from .serializers import TemperatureRecordSerializer, GarageRecordSerializer
+from .models import TemperatureSensor, TemperatureRecord, GarageRecord
 from .forms import SensorForm
 from .permissions import IsOwnerOrReadOnly
 
@@ -37,6 +37,18 @@ def current_temps(request):
                                             "temp": "No recorded temperatures", 
                                             "datetime": "None"})
     return render(request, 'temperature/current_temps.html', context=context)
+
+def current_garage(request):
+    mountain_tz = pytz.timezone('America/Denver')
+    garage_records = GarageRecord.objects.all().order_by('-time')
+    if len(garage_records) > 0:
+        latest_garage_state = garage_records[0].get_state_display()
+        latest_garage_time = garage_records[0].time.astimezone(tz=mountain_tz).strftime('%B %d, %Y, %I:%M %p %Z')
+    else:
+        latest_garage_state = "No record"
+        latest_garage_time = "N/A"
+    context = {"state": latest_garage_state, "time": latest_garage_time}
+    return render(request, 'temperature/current_garage.html', context=context)
 
 @login_required
 def sensors(request):
@@ -85,3 +97,12 @@ class TemperatureRecordDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TemperatureRecordSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+class GarageRecordList(generics.ListCreateAPIView):
+    queryset = GarageRecord.objects.all()
+    serializer_class = GarageRecordSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class GarageRecordDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GarageRecord.objects.all()
+    serializer_class = GarageRecordSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
