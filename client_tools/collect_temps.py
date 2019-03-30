@@ -4,7 +4,7 @@
 # it to the server.
 
 from TempHelper import TempDataPoint, Comm
-import ClientData
+import ClientDataTemp
 
 url = ClientDataTemp.url
 username = ClientDataTemp.username

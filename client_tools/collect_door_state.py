@@ -8,14 +8,6 @@ from time import sleep
 import sys
 import logging
 
-def led_on():
-    global led
-    led.on()
-
-def led_off():
-    global led
-    led.off()
-
 def send_state_message(data_point):
     global led
     led.on()

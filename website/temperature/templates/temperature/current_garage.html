@@ -5,7 +5,11 @@
     <div class="card-group">
         <div class="card">
             <h2>Garage Door</h2>
-            <i class="fas fa-door-closed temp-icon"></i>
+            {% if state == "Closed" %}
+                <i class="fas fa-door-closed temp-icon"></i>
+            {% elif state == "Open" %}
+                <i class="fas fa-door-open temp-icon"></i>
+            {% endif %}
             <p style="font-size: 25px">{{ state }}</p>
             <p>{{ time }}</p>
         </div>
