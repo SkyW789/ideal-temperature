@@ -17,7 +17,7 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 1. Fill in the blank environment variables in docker-compose.yml for the db container
     1. POSTGRES_USER - This must match the SQL_USER defined as a web container environment variable.
     1. POSTGRES_PASSWORD - This must match the SQL_PASSWORD defined as a web container environment variable.
-1. Run the following command to build the containers
+1. Run the following command to build and start the containers
 ```
 docker-compose up -d
 ```
@@ -39,7 +39,7 @@ For example, if temperature records are initially collected at a rate of one new
 ```
 python manage.py cleanTemperatureRecords 120 30
 ```
-The cleanTemperatureRecords command is run a cron job inside the web container. By defaul the job is run once a day at midnight with a record age of 7 days and an interval of 60 minutes. The cronjob is defined in the cronjobs.txt file. If you wish to make changes then update the file and rebuild the web container.
+The cleanTemperatureRecords command is run as a cron job inside the web container. By defaul the job is run once a day at midnight with a record age of 7 days and an interval of 60 minutes. The cronjob is defined in the cronjobs.txt file. If you wish to make changes then update the file and rebuild the web container.
 
 ## Setup Raspberry Pi temperature sensors
 TBD

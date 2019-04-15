@@ -18,6 +18,26 @@ class TemperatureRecord(models.Model):
     def __str__(self):
         return str(self.timeRecorded) + " " + str(self.temperature)
 
+class DoorSensor(models.Model):
+    location = models.CharField(max_length=50, default="unknown")
+    sensorType = models.CharField(max_length=20, default="unknown")
+    name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class DoorRecord(models.Model):
+    STATES= (
+        ("O", "Open"),
+        ("C", "Closed"),
+    )
+    state = models.CharField(max_length=1, choices=STATES)
+    time = models.DateTimeField('date and time recorded')
+    sensor = models.ForeignKey(DoorSensor, on_delete=models.CASCADE, default=1)
+
+    def __str__(self):
+        return str(self.time) + " " + str(self.state)
+
 class GarageRecord(models.Model):
     STATES = (
         ("O", "Open"),

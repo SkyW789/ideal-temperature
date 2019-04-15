@@ -1,0 +1,33 @@
+{% extends "temperature/base.html" %}
+{% block content %}
+<body>
+    <h2 class="sec-header">Temperatures</h2>
+    <div class="card-group">
+        {% for nextValue in sensor_temps %}
+            <div class="card">
+                <h3>{{ nextValue.sensor }}</h3>
+                <i class="fas fa-thermometer-three-quarters temp-icon"></i>
+                <p style="font-size: 23px">{{ nextValue.temp }}F</p>
+                <p style="font-size: 14px">{{ nextValue.datetime }}</p>
+            </div>
+        {% endfor %}
+        <div class="clear"></div>
+    </div>
+    <h2 class="sec-header">Doors</h2>
+    <div class="card-group">
+        {% for nextValue in sensor_doors %}
+            <div class="card">
+                <h3>{{ nextValue.sensor }}</h3>
+                {% if nextValue.state == "Closed" %}
+                    <i class="fas fa-door-closed temp-icon"></i>
+                {% elif nextValue.state == "Open" %}
+                    <i class="fas fa-door-open temp-icon"></i>
+                {% endif %}
+                <p style="font-size: 23px">{{ nextValue.state }}</p>
+                <p style="font-size: 14px">{{ nextValue.datetime }}</p>
+            </div>
+        {% endfor %}
+        <div class="clear"></div>
+    </div>
+</body>
+{% endblock %}

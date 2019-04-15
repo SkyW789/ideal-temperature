@@ -14,15 +14,18 @@ from rest_framework import generics, permissions
 from datetime import datetime
 import pytz
 from .serializers import TemperatureRecordSerializer, GarageRecordSerializer
-from .models import TemperatureSensor, TemperatureRecord, GarageRecord
+from .models import TemperatureSensor, TemperatureRecord, GarageRecord, DoorSensor, DoorRecord
 from .forms import SensorForm
 from .permissions import IsOwnerOrReadOnly
 
 def index(request):
     return HttpResponse("This is the temperature app.")
 
-def current_temps(request):
-    context = {"sensor_temps": []}
+def current_status(request):
+    context = {
+        "sensor_temps": [],
+        "sensor_doors": []
+    }
     mountain_tz = pytz.timezone('America/Denver')
     for nextSensor in TemperatureSensor.objects.all():
         allTemps = TemperatureRecord.objects.filter(sensor__exact=nextSensor).order_by('-timeRecorded')
@@ -36,19 +39,20 @@ def current_temps(request):
             context["sensor_temps"].append({"sensor": nextSensor.location, 
                                             "temp": "No recorded temperatures", 
                                             "datetime": "None"})
-    return render(request, 'temperature/current_temps.html', context=context)
 
-def current_garage(request):
-    mountain_tz = pytz.timezone('America/Denver')
-    garage_records = GarageRecord.objects.all().order_by('-time')
-    if len(garage_records) > 0:
-        latest_garage_state = garage_records[0].get_state_display()
-        latest_garage_time = garage_records[0].time.astimezone(tz=mountain_tz).strftime('%B %d, %Y, %I:%M %p %Z')
-    else:
-        latest_garage_state = "No record"
-        latest_garage_time = "N/A"
-    context = {"state": latest_garage_state, "time": latest_garage_time}
-    return render(request, 'temperature/current_garage.html', context=context)
+    for nextSensor in DoorSensor.objects.all():
+        allStates = DoorRecord.objects.filter(sensor__exact=nextSensor).order_by('-time')
+        if len(allStates) > 0:
+            datetime_str = allStates[0].time.astimezone(tz=mountain_tz).strftime('%B %d, %Y, %I:%M %p %Z')
+            context["sensor_doors"].append({"sensor"    : nextSensor.location,
+                                            "state"     : allStates[0].get_state_display(),
+                                            "datetime"  : datetime_str})
+        else:
+            context["sensor_doors"].append({"sensor"    : nextSensor.location,
+                                            "state"     : "No record",
+                                            "datetime"  : "None"})
+
+    return render(request, "temperature/current_state.html", context=context)
 
 @login_required
 def sensors(request):

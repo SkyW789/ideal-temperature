@@ -4,8 +4,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('current_temps/', views.current_temps, name='current_temps'),
-    path('current_garage/', views.current_garage, name='current_garage'),
+    path('current_status/', views.current_status, name='current_status'),
     path('add_sensor/', views.add_sensor, name='add_sensor'),
     path('sensors/', views.sensors, name='sensors'),
     path('accounts/', include('django.contrib.auth.urls')),

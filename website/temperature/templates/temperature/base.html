@@ -5,12 +5,11 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'temperature/baseStyle.css' %}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-<thead>
+</head>
 <body>
     <div class="header">
-        <h1>Ideal Temperature App</h1>
-        <a class="menu{% if request.path == "/temperature/current_temps/"%} active{% endif %}" href="/temperature/current_temps">Current Temperature</a>
-        <a class="menu{% if request.path == "/temperature/current_garage/"%} active{% endif %}" href="/temperature/current_garage">Current Garage</a>
+        <h1 class="maintitle">Ideal Temperature App</h1>
+        <a class="menu{% if request.path == "/temperature/current_status/"%} active{% endif %}" href="/temperature/current_status">Current Status</a>
         <a class="menu{% if request.path == "/temperature/add_sensor/"%} active{% endif %}" href="/temperature/add_sensor">Add Sensor</a>
         <a class="menu{% if request.path == "/temperature/sensors/"%} active{% endif %}" href="/temperature/sensors">Sensors</a>
         {% if user.is_authenticated %}
@@ -19,7 +18,7 @@
     </div>
     <div class="content">
         {% block content %}
-        {% endblock %}
+        {% endblock content %}
     </div>
 </body>
 </html>
