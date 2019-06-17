@@ -10,8 +10,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('api/temp_records/', views.TemperatureRecordList.as_view()),
     path('api/temp_records/<int:pk>/', views.TemperatureRecordDetail.as_view()),
-    path('api/garage_records/', views.GarageRecordList.as_view()),
-    path('api/garage_records/<int:pk>/', views.GarageRecordDetail.as_view()),
+    path('api/door_records/', views.DoorRecordList.as_view()),
+    path('api/door_records/<int:pk>/', views.DoorRecordDetail.as_view()),
+    path('api/light_records/', views.LightRecordList.as_view()),
+    path('api/light_records/<int:pk>/', views.LightRecordDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

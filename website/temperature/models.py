@@ -22,6 +22,7 @@ class DoorSensor(models.Model):
     location = models.CharField(max_length=50, default="unknown")
     sensorType = models.CharField(max_length=20, default="unknown")
     name = models.CharField(max_length=20, unique=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.name
@@ -38,13 +39,23 @@ class DoorRecord(models.Model):
     def __str__(self):
         return str(self.time) + " " + str(self.state)
 
-class GarageRecord(models.Model):
+class LightSensor(models.Model):
+    location = models.CharField(max_length=50, default="unknown")
+    sensorType = models.CharField(max_length=20, default="unknown")
+    name = models.CharField(max_length=20, unique=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+
+    def __str__(self):
+        return self.name
+
+class LightRecord(models.Model):
     STATES = (
-        ("O", "Open"),
-        ("C", "Closed"),
+        ("O", "On"),
+        ("F", "Off"),
     )
     state = models.CharField(max_length=1, choices=STATES)
     time = models.DateTimeField('date and time recorded')
+    sensor = models.ForeignKey(LightSensor, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return str(self.time) + " " + str(self.state)

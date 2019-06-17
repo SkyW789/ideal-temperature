@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 from rest_framework import generics, permissions
 from datetime import datetime
 import pytz
-from .serializers import TemperatureRecordSerializer, GarageRecordSerializer
-from .models import TemperatureSensor, TemperatureRecord, GarageRecord, DoorSensor, DoorRecord
+from .serializers import TemperatureRecordSerializer, DoorRecordSerializer, LightRecordSerializer
+from .models import TemperatureSensor, TemperatureRecord, DoorSensor, DoorRecord, LightSensor, LightRecord
 from .forms import SensorForm
 from .permissions import IsOwnerOrReadOnly
 
@@ -24,7 +24,8 @@ def index(request):
 def current_status(request):
     context = {
         "sensor_temps": [],
-        "sensor_doors": []
+        "sensor_doors": [],
+        "sensor_lights": []
     }
     mountain_tz = pytz.timezone('America/Denver')
     for nextSensor in TemperatureSensor.objects.all():
@@ -32,12 +33,12 @@ def current_status(request):
         if len(allTemps) > 0:
             datetime_str = allTemps[0].timeRecorded.astimezone(
                     tz=pytz.timezone('America/Denver')).strftime('%B %d, %Y, %I:%M %p %Z')
-            context["sensor_temps"].append({"sensor": nextSensor.location, 
-                                            "temp": allTemps[0].temperature, 
+            context["sensor_temps"].append({"sensor": nextSensor.location,
+                                            "temp": allTemps[0].temperature,
                                             "datetime": datetime_str})
         else:
-            context["sensor_temps"].append({"sensor": nextSensor.location, 
-                                            "temp": "No recorded temperatures", 
+            context["sensor_temps"].append({"sensor": nextSensor.location,
+                                            "temp": "No recorded temperatures",
                                             "datetime": "None"})
 
     for nextSensor in DoorSensor.objects.all():
@@ -52,6 +53,20 @@ def current_status(request):
                                             "state"     : "No record",
                                             "datetime"  : "None"})
 
+    for nextSensor in LightSensor.objects.all():
+        allStates = []
+        allStates = LightRecord.objects.filter(sensor__exact=nextSensor).order_by('-time')
+        if len(allStates) > 0:
+            datetime_str = allStates[0].time.astimezone(tz=mountain_tz).strftime('%B %d, %Y, %I:%M %p %Z')
+            context['sensor_lights'].append({"sensor"   : nextSensor.location,
+                                             "state"    : allStates[0].get_state_display(),
+                                             "datetime" : datetime_str})
+
+        else:
+            context['sensor_lights'].append({"sensor"   : nextSensor.location,
+                                             "state"    : "No record",
+                                             "datetime" : "None"})
+
     return render(request, "temperature/current_state.html", context=context)
 
 @login_required
@@ -63,9 +78,9 @@ def sensors(request):
         return HttpResponseRedirect("/temperature/sensors/")
     context = {"sensors": []}
     for nextSensor in TemperatureSensor.objects.all():
-        context["sensors"].append({"id": nextSensor.id, 
-                                   "location": nextSensor.location, 
-                                   "type": nextSensor.sensorType, 
+        context["sensors"].append({"id": nextSensor.id,
+                                   "location": nextSensor.location,
+                                   "type": nextSensor.sensorType,
                                    "owner": nextSensor.owner.username,
                                    "name": nextSensor.name})
 
@@ -90,23 +105,37 @@ class TemperatureRecordList(generics.ListCreateAPIView):
     queryset = TemperatureRecord.objects.all()
     serializer_class = TemperatureRecordSerializer
     permission_classes = (IsOwnerOrReadOnly,)
-
-    #def perform_create(self, serializer):
-    #    print(serializer)
-    #    sensor = TemperatureSensor.objects.get(name=serializer.data['sensorName'])
-    #    serializer.save(sensor=sensor)
+    # Defines the associated sensor model. Required for use
+    # with the IsOwnerOrReadOnly permission class
+    sensor_class = TemperatureSensor
 
 class TemperatureRecordDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = TemperatureRecord.objects.all()
     serializer_class = TemperatureRecordSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-class GarageRecordList(generics.ListCreateAPIView):
-    queryset = GarageRecord.objects.all()
-    serializer_class = GarageRecordSerializer
+class DoorRecordList(generics.ListCreateAPIView):
+    queryset = DoorRecord.objects.all()
+    serializer_class = DoorRecordSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+    # Defines the associated sensor model. Required for use
+    # with the IsOwnerOrReadOnly permission class
+    sensor_class = DoorSensor
+
+class DoorRecordDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DoorRecord.objects.all()
+    serializer_class = DoorRecordSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-class GarageRecordDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = GarageRecord.objects.all()
-    serializer_class = GarageRecordSerializer
+class LightRecordList(generics.ListCreateAPIView):
+    queryset = LightRecord.objects.all()
+    serializer_class = LightRecordSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+    # Defines the associated sensor model. Required for use
+    # with the IsOwnerOrReadOnly permission class
+    sensor_class = LightSensor
+
+class LightRecordDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = LightRecord.objects.all()
+    serializer_class = LightRecordSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

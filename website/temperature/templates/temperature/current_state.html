@@ -29,5 +29,21 @@
         {% endfor %}
         <div class="clear"></div>
     </div>
+    <h2 class="sec-header">Lights</h2>
+    <div class="card-group">
+        {% for nextValue in sensor_lights %}
+            <div class="card">
+                <h3>{{ nextValue.sensor }}</h3>
+                {% if nextValue.state == "Off" %}
+                    <i class="fas fa-lightbulb temp-icon"></i>
+                {% elif nextValue.state == "On" %}
+                    <i class="far fa-lightbulb temp-icon"></i>
+                {% endif %}
+                <p style="font-size: 23px">{{ nextValue.state }}</p>
+                <p style="font-size: 14px">{{ nextValue.datetime }}</p>
+            </div>
+        {% endfor %}
+        <div class="clear"></div>
+    </div>
 </body>
 {% endblock %}

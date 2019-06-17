@@ -4,7 +4,7 @@ import pytz
 from abc import ABC, abstractmethod
 
 class GenericDataPoint(ABC):
-    
+
     @abstractmethod
     def verify_data(self):
         pass
@@ -15,12 +15,12 @@ class GenericDataPoint(ABC):
 
     def convert_datetime_to_string(self, time):
         # Round time to nearest second then convert to string
-        time_rounded_sec = datetime(time.year, 
-                             time.month, 
-                             time.day, 
-                             time.hour, 
-                             time.minute, 
-                             time.second, 
+        time_rounded_sec = datetime(time.year,
+                             time.month,
+                             time.day,
+                             time.hour,
+                             time.minute,
+                             time.second,
                              tzinfo=time.tzinfo)
         return time_rounded_sec.isoformat()
 
@@ -58,9 +58,11 @@ class TempDataPoint(GenericDataPoint):
             self.unit = "F"
 
 class DoorDataPoint(GenericDataPoint):
+    STATES = ["O", "C"]
 
-    def __init__(self, state, time=None):
+    def __init__(self, state, sensor, time=None):
         self.state = state
+        self.sensor = sensor
         if time:
             self.time = time
         else:
@@ -69,12 +71,37 @@ class DoorDataPoint(GenericDataPoint):
     def verify_data(self):
         if not self.state:
             return False
+        if not self.state in STATES:
+            return False
         if not self.time:
             return False
         return True
 
     def get_dict(self):
-        return {"state": self.state, "time": self.convert_datetime_to_string(self.time)}
+        return {"state": self.state, "time": self.convert_datetime_to_string(self.time), "sensorName": self.sensor}
+
+class LightDataPoint(GenericDataPoint):
+    STATES = ["O", "F"]
+
+    def __init__(self, state, sensor, time=None):
+        self.state = state
+        self.sensor = sensor
+        if time:
+            self.time = time
+        else:
+            self.time = datetime.now(tz=pytz.utc)
+
+    def verify_data(self):
+        if not self.state:
+            return False
+        if not self.state in STATES:
+            return False
+        if not self.time:
+            return False
+        return True
+
+    def get_dict(self):
+        return {"state": self.state, "time": self.convert_datetime_to_string(self.time), "sensorName": self.sensor}
 
 class Comm():
 
@@ -86,13 +113,12 @@ class Comm():
     def send(self, data):
         if not data.verify_data:
             return (False, "Unable to verify the data")
-        
+
         try:
-            response = requests.post(self.url, 
-                                     data=data.get_dict(), 
+            response = requests.post(self.url,
+                                     data=data.get_dict(),
                                      auth=requests.auth.HTTPBasicAuth(self.username, self.password), timeout=9.1)
         except requests.exceptions.RequestException as e:
             return (False, str(e))
 
         return (True, None)
-

@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from .models import TemperatureSensor
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -9,6 +8,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             # If no data is being posted to allow it
             if not request.data:
                 return True
-            sensor = TemperatureSensor.objects.get(name=request.data['sensorName'])
+            sensor = view.sensor_class.objects.get(name=request.data['sensorName'])
             return sensor.owner == request.user
         return False
