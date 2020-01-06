@@ -1,0 +1,150 @@
+{% extends "temperature/base.html" %}
+{% block content %}
+<body>
+  <h2 class="sec-header">Temperatures</h2>
+  <div class="graph-spec-group">
+    <label class="graph-spec-label" for="tempSensors">Sensor:</label>
+    <select id="tempSensors">
+      {% for sensor in temp_sensors %}
+        <option value="{{ sensor.name }}">{{ sensor.location }}</option>
+      {% endfor %}
+    </select>
+    <span class="graph-spec">
+      <label class="graph-spec-label" for="tempMaxDataPoints">Number of Data Points:</label>
+      <input type="number" id="tempMaxDataPoints" value="50">
+    </span>
+    <span class="graph-spec">
+      <label class="graph-spec-label" for="tempStartDate">Start Date:</label>
+      <input type="datetime-local" id="tempStartDate">
+    </span>
+    <span class="graph-spec">
+      <label class="graph-spec-label" for="tempEndDate">End time:</label>
+      <input type="datetime-local" id="tempEndDate">
+    </span>
+  </div>
+  <div class="graph-spec-group">
+    <button onclick="buildTempChart()">Render Chart</button>
+  </div>
+  <div class="chart">
+    <canvas id='tempChart'></canvas>
+  </div>
+
+  <h2 class="sec-header">Doors</h2>
+  <button onclick="buildDoorChart()">Render Chart</button>
+  <select id="doorSensors">
+    {% for sensor in door_sensors %}
+      <option value="{{ sensor.name }}">{{ sensor.location }}</option>
+    {% endfor %}
+  </select>
+  <input type="number" id="doorMaxDataPoints">
+  <div class="chart">
+    <canvas id='doorChart'></canvas>
+  </div>
+
+  <h2 class="sec-header">Lights</h2>
+  <button onclick="buildLightChart()">Render Chart</button>
+  <select id="lightSensors">
+    {% for sensor in light_sensors %}
+      <option value="{{ sensor.name }}">{{ sensor.location }}</option>
+    {% endfor %}
+  </select>
+  <input type="number" id="lightMaxDataPoints">
+  <div class="chart">
+    <canvas id='lightChart'></canvas>
+  </div>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+<script>
+  var tempChart;
+  function loadData(url, useData)
+  {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        useData(this);
+      }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+  }
+  function buildTempChart()
+  {
+    var sensor = document.getElementById('tempSensors');
+    var maxDataPoints = document.getElementById('tempMaxDataPoints');
+    var startDate = document.getElementById('tempStartDate');
+    var endDate = document.getElementById('tempEndDate');
+    var url = "/temperature/api/temp_list?";
+    if (maxDataPoints && maxDataPoints.value)
+    {
+      url = url.concat("&record_count=", maxDataPoints.value);
+    }
+    if (sensor && sensor.value)
+    {
+      url = url.concat("&sensor=", sensor.value);
+    }
+    if (startDate && startDate.value)
+    {
+      url = url.concat("&startDate=", startDate.value);
+    }
+    if (endDate && endDate.value)
+    {
+      url = url.concat("&endDate=", endDate.value);
+    }
+    loadData(url, drawTempGraph);
+    console.log(url);
+  }
+  function drawTempGraph(xhttp)
+  {
+    var tempData = JSON.parse(xhttp.responseText);
+    var data = [];
+    tempData.forEach(function(item, index) {
+      data.push({y: item['temperature'], x: moment(item['timeRecorded'])});
+    });
+    // Delete any old charts
+    if (tempChart)
+    {
+      tempChart.destroy();
+    }
+    var ctx = document.getElementById('tempChart').getContext('2d');
+    tempChart = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Temperatures',
+          data: data,
+          borderColor: 'rgba(0, 0, 0, 1)',
+          pointBackgroundColor: 'rgba(0,0,0,1)',
+          fill: false,
+          borderWidth: 0,
+          lineTension: 0,
+          showLine: true
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Temperature(F)'
+            }
+          }],
+          xAxes: [{
+            type: 'time',
+            time: {
+              displayFormats: {
+                day: 'MMM D',
+                hour: 'MMM D hA'
+              }
+            }
+          }]
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

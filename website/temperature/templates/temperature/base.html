@@ -10,6 +10,7 @@
     <div class="header">
         <h1 class="maintitle">Ideal Temperature App</h1>
         <a class="menu{% if request.path == "/temperature/current_status/"%} active{% endif %}" href="/temperature/current_status">Current Status</a>
+        <a class="menu{% if request.path == "/temperature/chart/"%} active{% endif %}" href="/temperature/chart">Historical Data</a>
         <a class="menu{% if request.path == "/temperature/add_sensor/"%} active{% endif %}" href="/temperature/add_sensor">Add Sensor</a>
         <a class="menu{% if request.path == "/temperature/sensors/"%} active{% endif %}" href="/temperature/sensors">Sensors</a>
         {% if user.is_authenticated %}

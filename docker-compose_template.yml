@@ -20,6 +20,7 @@ services:
             - DEBUG=False
         depends_on:
             - db
+        restart: always
 
     db:
         image: postgres:10.5-alpine
@@ -28,6 +29,7 @@ services:
         environment:
             - POSTGRES_USER=
             - POSTGRES_PASSWORD=
+        restart: always
 
     nginx:
         build: ./nginx
@@ -37,6 +39,7 @@ services:
             - web
         volumes:
             - static_volume:/usr/src/app/staticfiles
+        restart: always
 
 volumes:
     postgres_data:

@@ -16,7 +16,7 @@ class TemperatureRecord(models.Model):
     sensor = models.ForeignKey(TemperatureSensor, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
-        return str(self.timeRecorded) + " " + str(self.temperature)
+        return f"{self.pk}: {self.sensor} {self.timeRecorded} {self.temperature}"
 
 class DoorSensor(models.Model):
     location = models.CharField(max_length=50, default="unknown")

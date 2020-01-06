@@ -16,7 +16,7 @@
     background-color: #B0394B;
     color: white;
     padding: 1em 0 1em 1em;
-    font-family: "Verdana", sans-serif; 
+    font-family: "Verdana", sans-serif;
 }
 
 .content {
@@ -78,4 +78,17 @@ h3 {
 
 .clear {
     clear: both;
+}
+
+.chart {
+    width: 50%;
+    height: 50%;
+}
+
+.graph-spec-group {
+  margin-left: 50px;
+}
+
+.graph-spec {
+  white-space: nowrap;
 }
